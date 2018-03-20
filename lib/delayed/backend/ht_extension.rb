@@ -6,8 +6,9 @@ module Delayed
 
         base.switch_to_ht_table
         base.class_eval do
-          attr_accessible(:class_name, :obj_id, :method_name, :args, :args_digest)
+          attr_accessible :delayed_object_type, :delayed_object_id, :method_name, :args, :args_digest
           before_validation :update_unique_digest
+          validates_uniqueness_of :unique_digest
         end
       end
 
@@ -40,24 +41,24 @@ module Delayed
         if self.handler.present?
           YAML.load(self.handler)
         else
-          clazz = Object.const_get(self.class_name)
-          object = clazz.find_by_id(self.obj_id)
+          clazz = Object.const_get(self.delayed_object_type)
+          object = clazz.find_by_id(self.delayed_object_id)
           PerformableMethod.new(object, self.method_name, YAML.load(self.args))
         end
       end
 
       def populate_method_attrs(performable_method)
         object = performable_method.object
-        self.class_name = object.class.name
-        self.obj_id = object.id
+        self.delayed_object_type = object.class.name
+        self.delayed_object_id = object.id
         self.method_name = performable_method.method_name
         self.args = performable_method.args.to_yaml
         self.handler = nil
       end
 
       def update_unique_digest
-        unique_fields_str = [self.class_name,
-                             self.obj_id,
+        unique_fields_str = [self.delayed_object_type,
+                             self.delayed_object_id,
                              self.method_name,
                              self.args,
                              self.failed_at,
