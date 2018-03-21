@@ -6,7 +6,7 @@ module Delayed
 
         base.switch_to_ht_table
         base.class_eval do
-          attr_accessible :delayed_object_type, :delayed_object_id, :method_name, :args, :args_digest
+          attr_accessible :delayed_object_type, :delayed_object_id, :method_name, :args, :unique_digest
           before_validation :update_unique_digest
           validates_uniqueness_of :unique_digest
         end
@@ -65,6 +65,11 @@ module Delayed
                              self.handler,
                              !!self.locked_at].join('#')
         self.unique_digest = Digest::SHA256.hexdigest unique_fields_str
+      end
+
+      def archive
+        Delayed::Backend::ActiveRecord::ArchivedJob.archive(self)
+        self.destroy
       end
     end
   end
