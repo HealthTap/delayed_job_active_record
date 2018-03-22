@@ -78,20 +78,21 @@ module Delayed
 
       def update_unique_digest
         unique_fields = [self.delayed_object_type,
-                             self.delayed_object_id,
-                             self.method_name,
-                             self.args,
-                             self.failed_at,
-                             self.handler,
-                             !!self.locked_at,
-                             self.run_at]
+                         self.delayed_object_id,
+                         self.method_name,
+                         self.args,
+                         self.failed_at,
+                         self.handler,
+                         !!self.locked_at,
+                         self.run_at]
         unique_fields_str = unique_fields.join('#')
         self.unique_digest = Digest::SHA256.hexdigest unique_fields_str
       end
 
       def archive
-        Delayed::Backend::ActiveRecord::ArchivedJob.archive(self)
-        self.destroy
+        if Delayed::Backend::ActiveRecord::ArchivedJob.archive(self)
+          self.destroy
+        end
       end
     end
   end
