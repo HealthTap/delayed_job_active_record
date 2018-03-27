@@ -67,7 +67,7 @@ module Delayed
         elsif object.is_a?(::Class)
           [object.name, nil, nil]
         else
-          [nil, nil, object.to_yaml]
+          [nil, nil, performable_method.to_yaml]
         end
 
         unless self.handler.present?
