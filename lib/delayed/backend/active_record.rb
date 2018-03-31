@@ -11,8 +11,6 @@ module Delayed
         attr_accessible :priority, :run_at, :queue, :payload_object,
           :failed_at, :locked_at, :locked_by
 
-        cattr_accessor :jobs_logger
-
         before_save :set_default_run_at
 
         def self.set_delayed_job_table_name
@@ -24,6 +22,8 @@ module Delayed
 
         def self.switch_to_ht_mode
           include Delayed::Backend::HtExtension
+          #initialize worker for plugins
+          Delayed::Worker.new
         end
 
         def self.ready_to_run(worker_name, max_run_time)
@@ -62,7 +62,12 @@ module Delayed
           # This is our old fashion, tried and true, but slower lookup
           ready_scope.limit(worker.read_ahead).detect do |job|
             count = ready_scope.where(:id => job.id).update_all(:locked_at => now, :locked_by => worker.name)
-            count == 1 && job.reload
+            if count == 1
+              job.reload
+              job.update_unique_digest
+              job.save
+              job
+            end
           end
         end
 
