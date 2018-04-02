@@ -64,8 +64,10 @@ module Delayed
             count = ready_scope.where(:id => job.id).update_all(:locked_at => now, :locked_by => worker.name)
             if count == 1
               job.reload
-              job.update_unique_digest
-              job.save
+              if job.respond_to?(:update_unique_digest)
+                job.update_unique_digest
+                job.save
+              end
               job
             end
           end
