@@ -15,6 +15,7 @@ class Delayed::Backend::ActiveRecord::ArchivedJob < ::ActiveRecord::Base
     retry_job = Delayed::Backend::ActiveRecord::HtDelayedJob.new(
       self.attributes.select{|a| Delayed::Backend::ActiveRecord::HtDelayedJob.accessible_attributes.include?(a)}
     )
+    retry_job.handler = self.handler
     retry_job.failed_at = nil
     retry_job.attempts = 0
     if retry_job.save

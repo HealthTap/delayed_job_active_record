@@ -21,9 +21,8 @@ module Delayed
         self.set_delayed_job_table_name
 
         def self.switch_to_ht_mode
-          include Delayed::Backend::HtExtension
-          #initialize worker for plugins
-          Delayed::Worker.new
+          include Delayed::Backend::HtExtension unless self.included_modules.include?(Delayed::Backend::HtExtension)
+          Delayed::Worker.initialize_plugins
         end
 
         def self.ready_to_run(worker_name, max_run_time)
