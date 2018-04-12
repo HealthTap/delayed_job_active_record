@@ -8,6 +8,8 @@ module Delayed
       class Job < ::ActiveRecord::Base
         include Delayed::Backend::Base
 
+        cattr_accessor :ht_mode
+
         attr_accessible :priority, :run_at, :queue, :payload_object,
           :failed_at, :locked_at, :locked_by
 
@@ -21,8 +23,11 @@ module Delayed
         self.set_delayed_job_table_name
 
         def self.switch_to_ht_mode
-          include Delayed::Backend::HtExtension unless self.included_modules.include?(Delayed::Backend::HtExtension)
-          Delayed::Worker.initialize_plugins
+          unless self.ht_mode
+            include Delayed::Backend::HtExtension
+            Delayed::Worker.initialize_plugins
+            self.ht_mode = true
+          end
         end
 
         def self.ready_to_run(worker_name, max_run_time)
