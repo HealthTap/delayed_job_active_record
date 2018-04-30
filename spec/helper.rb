@@ -10,14 +10,21 @@ SimpleCov.start
 require 'logger'
 require 'rspec'
 
+begin
+  require 'protected_attributes'
+rescue LoadError
+end
 require 'delayed_job_active_record'
 require 'delayed/backend/shared_spec'
 
 Delayed::Worker.logger = Logger.new('/tmp/dj.log')
 ENV['RAILS_ENV'] = 'test'
 
+db_adapter, gemfile = ENV["ADAPTER"], ENV["BUNDLE_GEMFILE"]
+db_adapter ||= gemfile && gemfile[%r(gemfiles/(.*?)/)] && $1
+db_adapter ||= 'sqlite3'
+
 config = YAML.load(File.read('spec/database.yml'))
-db_adapter = ENV['CI_DB_ADAPTER'] || 'sqlite3'
 ActiveRecord::Base.establish_connection config[db_adapter]
 ActiveRecord::Base.logger = Delayed::Worker.logger
 ActiveRecord::Migration.verbose = false
@@ -46,10 +53,14 @@ end
 
 # Purely useful for test cases...
 class Story < ActiveRecord::Base
-  self.primary_key = :story_id
+  if ::ActiveRecord::VERSION::MAJOR < 4 && ActiveRecord::VERSION::MINOR < 2
+    set_primary_key :story_id
+  else
+    self.primary_key = :story_id
+  end
   def tell; text; end
   def whatever(n, _); tell*n; end
-  default_scope where(:scoped => true)
+  default_scope { where(:scoped => true) }
 
   handle_asynchronously :whatever
 end
