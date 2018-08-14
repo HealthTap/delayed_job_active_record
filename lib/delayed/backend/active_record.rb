@@ -7,8 +7,7 @@ module Delayed
       # Contains the work object as a YAML field.
       class Job < ::ActiveRecord::Base
         include Delayed::Backend::Base
-
-        cattr_accessor :ht_mode
+        include Delayed::Backend::HtExtension
 
         attr_accessible :priority, :run_at, :queue, :payload_object,
           :failed_at, :locked_at, :locked_by
@@ -16,19 +15,15 @@ module Delayed
         before_save :set_default_run_at
 
         def self.set_delayed_job_table_name
-          delayed_job_table_name = "#{::ActiveRecord::Base.table_name_prefix}delayed_jobs"
-          self.table_name = delayed_job_table_name
+          if self.respond_to?(:switch_to_ht_table)
+            switch_to_ht_table
+          else
+            delayed_job_table_name = "#{::ActiveRecord::Base.table_name_prefix}delayed_jobs"
+            self.table_name = delayed_job_table_name
+          end
         end
 
         self.set_delayed_job_table_name
-
-        def self.switch_to_ht_mode
-          unless self.ht_mode
-            include Delayed::Backend::HtExtension
-            Delayed::Worker.initialize_plugins
-            self.ht_mode = true
-          end
-        end
 
         def self.ready_to_run(worker_name, max_run_time)
           where('(run_at <= ? AND (locked_at IS NULL OR locked_at < ?) OR locked_by = ?) AND failed_at IS NULL', db_time_now, db_time_now - max_run_time, worker_name)
