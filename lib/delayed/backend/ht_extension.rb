@@ -47,7 +47,7 @@ module Delayed
                    else
                      clazz
                    end
-          raise ArgumentError.new("object not found for delayed job #{self.id}") unless object.present?
+          raise ArgumentError.new("object not found for delayed job #{self.id}, type: #{self.delayed_object_type}, obj_id: #{self.delayed_object_id}") unless object.present?
           PerformableMethod.new(object, self.method_name, YAML.load(self.args))
         end
       end
