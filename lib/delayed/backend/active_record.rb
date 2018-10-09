@@ -148,7 +148,12 @@ module Delayed
           # UPDATE...LIMIT. It uses separate queries to lock and return the job
           count = ready_scope.limit(1).update_all(locked_at: now, locked_by: worker.name)
           return nil if count == 0
-          where(locked_at: now, locked_by: worker.name, failed_at: nil).first
+          job = where(locked_at: now, locked_by: worker.name, failed_at: nil).first
+          if job.respond_to?(:update_unique_digest)
+            job.update_unique_digest
+            job.save
+          end
+          job
         end
 
         def self.reserve_with_scope_using_optimized_mssql(ready_scope, worker, now)
