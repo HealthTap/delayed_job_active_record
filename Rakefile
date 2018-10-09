@@ -1,10 +1,9 @@
-# -*- encoding: utf-8 -*-
 require "bundler/gem_helper"
 Bundler::GemHelper.install_tasks
 
 require "rspec/core/rake_task"
 
-ADAPTERS = %w(mysql postgresql sqlite3)
+ADAPTERS = %w[mysql2 postgresql sqlite3].freeze
 
 ADAPTERS.each do |adapter|
   desc "Run RSpec code examples for #{adapter} adapter"
@@ -32,4 +31,7 @@ Rake::Task[:spec].enhance do
   Coveralls::SimpleCov::Formatter.new.format(SimpleCov.result)
 end
 
-task default: ([:coverage] + ADAPTERS + [:adapter])
+require "rubocop/rake_task"
+RuboCop::RakeTask.new
+
+task default: ([:coverage] + ADAPTERS + [:adapter] + [:rubocop])

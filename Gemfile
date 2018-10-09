@@ -1,28 +1,25 @@
-source 'https://rubygems.org'
+source "https://rubygems.org"
 
-gem 'rake'
+gem "rake"
 
 group :test do
   platforms :jruby do
-    gem 'activerecord-jdbcmysql-adapter'
-    gem 'jdbc-mysql'
-
-    gem 'activerecord-jdbcpostgresql-adapter'
-    gem 'jdbc-postgres'
-
-    gem 'activerecord-jdbcsqlite3-adapter'
-    gem 'jdbc-sqlite3'
+    gem "activerecord-jdbcmysql-adapter"
+    gem "activerecord-jdbcpostgresql-adapter"
+    gem "activerecord-jdbcsqlite3-adapter"
   end
 
   platforms :ruby, :mswin, :mingw do
-    gem 'mysql', '~> 2.8.1'
-    gem 'pg'
-    gem 'sqlite3'
+    gem "mysql2", "~> 0.4.5"
+    gem "pg", "~> 0.18"
+    gem "sqlite3"
   end
 
-  gem 'coveralls', :require => false
-  gem 'rspec', '>= 2.11'
-  gem 'simplecov', :require => false
+  gem "coveralls", require: false
+  gem "rspec", ">= 3"
+  gem "rubocop"
+  gem "rubocop-rspec"
+  gem "simplecov", require: false
 end
 
 gemspec

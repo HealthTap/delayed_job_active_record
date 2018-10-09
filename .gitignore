@@ -6,3 +6,4 @@ bin
 coverage
 pkg/*
 .idea
+gemfiles/**/*.gemfile.lock
