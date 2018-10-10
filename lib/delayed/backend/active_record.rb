@@ -119,7 +119,14 @@ module Delayed
           # This is our old fashion, tried and true, but slower lookup
           ready_scope.limit(worker.read_ahead).detect do |job|
             count = ready_scope.where(id: job.id).update_all(locked_at: now, locked_by: worker.name)
-            count == 1 && job.reload
+            if count == 1
+              job.reload
+              if job.respond_to?(:update_unique_digest)
+                job.update_unique_digest
+                job.save
+              end
+              job
+            end
           end
         end
 
