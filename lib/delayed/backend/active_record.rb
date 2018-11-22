@@ -13,6 +13,7 @@ module Delayed
           :failed_at, :locked_at, :locked_by
 
         before_save :set_default_run_at
+        validates :unique_digest, uniqueness: true
 
         def self.set_delayed_job_table_name
           if self.respond_to?(:switch_to_ht_table)
