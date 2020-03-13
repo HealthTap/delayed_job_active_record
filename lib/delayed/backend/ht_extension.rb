@@ -6,7 +6,7 @@ module Delayed
 
         base.switch_to_ht_table
         base.class_eval do
-          attr_accessible :delayed_object_type, :delayed_object_id, :method_name, :args, :unique_digest
+          #attr_accessible :delayed_object_type, :delayed_object_id, :method_name, :args, :unique_digest
           before_validation :update_unique_digest
         end
       end
