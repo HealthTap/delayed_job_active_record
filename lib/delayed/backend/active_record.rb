@@ -44,7 +44,7 @@ module Delayed
         scope :for_queues, lambda { |queues = Worker.queues| where(queue: queues) if Array(queues).any? }
 
         before_save :set_default_run_at
-        validates :unique_digest, uniqueness: true, case_sensitive: true
+        validates_uniqueness_of :unique_digest, case_sensitive: true
 
         def self.set_delayed_job_table_name
           if self.respond_to?(:switch_to_ht_table)
