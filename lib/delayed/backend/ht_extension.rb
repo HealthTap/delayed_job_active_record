@@ -86,7 +86,7 @@ module Delayed
                          !!self.locked_at,
                          self.run_at]
         unique_fields_str = unique_fields.join('#')
-        self.unique_digest = Digest::SHA256.hexdigest unique_fields_str
+        self.unique_digest = OpenSSL::Digest::SHA256.hexdigest unique_fields_str
       end
 
       def archive
