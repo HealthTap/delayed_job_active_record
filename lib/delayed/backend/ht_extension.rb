@@ -91,7 +91,12 @@ module Delayed
 
       def archive
         if Delayed::Backend::ActiveRecord::ArchivedJob.archive(self)
-          self.destroy
+          begin
+            tries ||= 3
+            self.destroy
+          rescue ActiveRecord::Deadlocked
+            retry unless (tries -= 1).zero?
+          end
         end
       end
     end
