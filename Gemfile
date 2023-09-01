@@ -15,7 +15,7 @@ group :test do
     gem "sqlite3"
   end
 
-  # gem "coveralls", require: false
+  gem "coveralls", require: false
   gem "rspec", ">= 3"
   gem "rubocop"
   gem "rubocop-rspec"
