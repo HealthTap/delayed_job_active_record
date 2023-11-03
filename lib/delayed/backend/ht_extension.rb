@@ -94,7 +94,7 @@ module Delayed
           begin
             tries ||= 3
             self.destroy
-          rescue ActiveRecord::Deadlocked
+          rescue ::ActiveRecord::Deadlocked
             retry unless (tries -= 1).zero?
           end
         end
