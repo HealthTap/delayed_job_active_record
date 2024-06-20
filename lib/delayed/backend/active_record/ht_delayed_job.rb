@@ -1,7 +1,7 @@
 module Delayed
   module Backend
     module ActiveRecord
-      class HtDelayedJob < ::ActiveRecord::Base
+      class HtDelayedJob < Delayed::Backend::ActiveRecord::AbstractJob
         include Delayed::Backend::HtExtension
 
         #attr_accessible :priority, :run_at, :queue, :payload_object,

@@ -1,4 +1,4 @@
-class Delayed::Backend::ActiveRecord::ArchivedJob < ::ActiveRecord::Base
+class Delayed::Backend::ActiveRecord::ArchivedJob < Delayed::Backend::ActiveRecord::AbstractJob
   #attr_accessible :priority, :run_at, :queue, :payload_object, :failed_at, :locked_at, :locked_by,
   #                :delayed_object_type, :delayed_object_id, :method_name, :args, :unique_digest,
   #                :attempts, :handler, :last_error

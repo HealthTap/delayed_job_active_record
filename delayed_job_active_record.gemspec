@@ -1,5 +1,5 @@
 Gem::Specification.new do |spec|
-  spec.add_dependency "activerecord", [">= 3.0", "< 6.1"]
+  spec.add_dependency "activerecord", [">= 3.0", "< 6.2"]
   spec.add_dependency "delayed_job",  [">= 3.0", "< 5"]
   spec.authors        = ["Brian Ryckbost", "Matt Griffin", "Erik Michaels-Ober"]
   spec.description    = "ActiveRecord backend for Delayed::Job, originally authored by Tobias Lütke"
@@ -11,4 +11,5 @@ Gem::Specification.new do |spec|
   spec.require_paths  = ["lib"]
   spec.summary        = "ActiveRecord backend for DelayedJob"
   spec.version        = "4.1.3"
+  spec.metadata       = { "github_repo" => "ssh://github.com/HealthTap/delayed_job_active_record" }
 end
